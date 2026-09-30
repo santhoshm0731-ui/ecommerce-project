@@ -9,12 +9,18 @@ https://docs.djangoproject.com/en/6.1/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/6.1/ref/settings/
 """
-
+import os
 from pathlib import Path
+from  datetime import timedelta
+
+import rest_framework_simplejwt
+from dotenv import load_dotenv
+
+BASE_DIR=Path(__file__).resolve().parent.parent
+
+load_dotenv(dotenv_path=BASE_DIR.parent / '.env')
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
-BASE_DIR = Path(__file__).resolve().parent.parent
-
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/6.1/howto/deployment/checklist/
@@ -39,6 +45,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'accounts',
     'rest_framework',
+    'rest_framework_simplejwt.token_blacklist',
 
 ]
 
@@ -77,15 +84,14 @@ WSGI_APPLICATION = 'ecommerce.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME':'ecommerce',
-        'USER':'root',
-        'PASSWORD':'Santhosh@3107',
-        'HOST':'localhost',
-        'PORT':'3306',
+        'ENGINE':os.getenv('DB_ENGINE'),
+        'NAME':os.getenv('DB_NAME'),
+        'USER':os.getenv('USER'),
+        'PASSWORD':os.getenv('DB_PASSWORD'),
+        'HOST':os.getenv('DB_HOST'),
+        'PORT':os.getenv('PORT'),
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/6.1/ref/settings/#auth-password-validators
@@ -137,3 +143,16 @@ MAILERS = {
 
 AUTH_USER_MODEL = 'accounts.User'
 DEFAULT_AUTO_FIELD='django.db.models.BigAutoField'
+
+SIMPLE_JWT={
+'ACCESS_TOKEN_LIFETIME':timedelta(minutes=20),
+'REFRESH_TOKEN_LIFETIME':timedelta(hours=10),
+'ROTATE_REFRESH_TOKENS':True,
+'BLACKLIST_AFTER_ROTATION':True
+}
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ],
+}
