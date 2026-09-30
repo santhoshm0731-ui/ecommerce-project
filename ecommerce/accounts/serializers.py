@@ -65,3 +65,110 @@ class LoginSerializer(serializers.Serializer):
             'refresh_token': str(user_token)
         }
 
+class AddressSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Address
+        fields = [
+            'id',
+            'home_no',
+            'building_name',
+            'street',
+            'nearby_landmark',
+            'zip_code',
+            'type',
+            'city',
+            'state',
+            'country',
+            'is_default'
+        ]
+
+    def create(self, validated_data):
+        user = self.context['request'].user
+
+        if validated_data.get('is_default', False):
+            user.addresses.filter(is_default=True).update(is_default=False)
+
+        return Address.objects.create(
+            customer=user,
+            **validated_data
+        )
+
+    def update(self, instance, validated_data):
+        if validated_data.get('is_default', False):
+            instance.customer.addresses.filter(
+                is_default=True
+            ).exclude(
+                id=instance.id
+            ).update(is_default=False)
+
+        return super().update(instance, validated_data)
+
+    def validate_home_no(self, value):
+        value = value.strip()
+        if not value.isdigit():
+            raise serializers.ValidationError("Home number should be numeric")
+        if len(value) > 4:
+            raise serializers.ValidationError("Home number should be less then 5 digits")
+        return value
+
+    def validate_building_name(self, value):
+        value = value.strip()
+        if not value:
+            raise serializers.ValidationError("Building name is required.")
+        if value.isdigit():
+            raise serializers.ValidationError("Building name should not be numeric")
+        return value
+
+    def validate_street(self, value):
+        value = value.strip()
+        if not value:
+            raise serializers.ValidationError(
+                "Street is required."
+            )
+        return value
+
+    def validate_nearby_landmark(self, value):
+        value = value.strip()
+        if not value:
+            raise serializers.ValidationError(
+                "Nearby landmark is required."
+            )
+        return value
+
+    def validate_zip_code(self, value):
+        value = value.strip()
+        if not value.isdigit():
+            raise serializers.ValidationError(
+                "ZIP code must contain only digits."
+            )
+        if len(value) not in [5, 6]:
+            raise serializers.ValidationError(
+                "ZIP code must contain 5 or 6 digits."
+            )
+        return value
+
+    def validate_city(self, value):
+        value = value.strip()
+        if not value:
+            raise serializers.ValidationError(
+                "City is required."
+            )
+        return value
+
+    def validate_state(self, value):
+        value = value.strip()
+        if not value:
+            raise serializers.ValidationError(
+                "State is required."
+            )
+        return value
+
+    def validate_country(self, value):
+        value = value.strip()
+        if not value:
+            raise serializers.ValidationError(
+                "Country is required."
+            )
+        return value
+

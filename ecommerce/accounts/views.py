@@ -73,3 +73,89 @@ class LogoutView(APIView):
             status=status.HTTP_200_OK
         )
 
+class AdminTestView(APIView):
+    permission_classes = [IsAdminUser]
+    def get(self,request):
+       return Response(
+           {
+               "Admin access granted."
+           },
+           status=status.HTTP_200_OK
+       )
+
+class AddressView(APIView):
+    permission_classes = [IsAuthenticated]
+    def get(self,request,):
+        user=request.user
+        address=AddressSerializer(user.addresses.all(),many=True)
+        return Response(
+            {
+                'message':'Your Address.',
+                'address':address.data
+            },
+            status=status.HTTP_200_OK
+        )
+    def post(self,request):
+        data=request.data
+        serializer=AddressSerializer(data=data,context={'request': request})
+        if not serializer.is_valid():
+
+            return Response(
+                {
+                    'message':'Unable to save address',
+                    'error':serializer.errors
+                },
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        serializer.save()
+
+        return Response(
+            {
+                'message':'Address saved successfully.'
+            },
+            status=status.HTTP_201_CREATED
+        )
+    def patch(self,request,address_id):
+        user=request.user
+        try:
+            address = user.addresses.get(id=address_id)
+        except Address.DoesNotExist:
+            return Response(
+                {
+                    'message': 'Address not found'
+                },
+                status=status.HTTP_404_NOT_FOUND
+            )
+        address_update=request.data
+        serializer=AddressSerializer(instance=address,data=address_update,partial=True,context={'request': request})
+        if not serializer.is_valid():
+            return Response(
+                {
+                    'message':"Failed to update address",
+                    'Error':serializer.errors,
+                },
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        serializer.save()
+        return Response(
+            {
+                'message':"Address updated successfully"
+            },
+            status=status.HTTP_200_OK
+        )
+
+    def delete(self,request,address_id):
+        user=request.user
+        try:
+            address=user.addresses.get(id=address_id)
+        except Address.DoesNotExist:
+            return Response(
+                {
+                    'message': 'Address not found'
+                },
+                status=status.HTTP_404_NOT_FOUND
+            )
+        address.delete()
+        return Response(
+            status=status.HTTP_204_NO_CONTENT
+        )
