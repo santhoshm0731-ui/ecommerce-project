@@ -5,8 +5,10 @@ from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet
 from products.models import( Category,SubCategory,
                              ProductImage,Product,ProductVariant)
+from products.pagination import ProductPagination
 from products.serializers import (CategorySerializer,SubcategorySerializer,
                                   ProductImageSerializer,ProductSerializer,ProductVariantSerializer)
+from rest_framework.parsers import MultiPartParser, FormParser
 
 class CategoryView(APIView):
     def get_permissions(self):
@@ -104,5 +106,102 @@ class CategoryView(APIView):
         return Response(
             status=status.HTTP_204_NO_CONTENT
         )
+
+class SubCategoryView(ModelViewSet):
+    serializer_class = SubcategorySerializer
+
+    def get_permissions(self):
+        if self.request.method in ['GET', 'HEAD', 'OPTIONS']:
+            return [AllowAny()]
+        return [IsAdminUser()]
+
+    def get_queryset(self):
+        category_id = self.request.query_params.get('category')
+        user = self.request.user
+        if user and user.is_authenticated and user.is_staff:
+            if category_id:
+                return SubCategory.objects.filter(category=category_id)
+            return SubCategory.objects.all()
+        if category_id:
+            return SubCategory.objects.filter(is_active=True, category=category_id)
+        return SubCategory.objects.filter(is_active=True)
+
+
+from rest_framework.filters import SearchFilter, OrderingFilter
+
+
+class ProductView(ModelViewSet):
+    serializer_class = ProductSerializer
+    filter_backends = [SearchFilter, OrderingFilter]
+    pagination_class = ProductPagination
+    search_fields = ["name", "description"]
+    ordering_fields = ["price", "name", "created_at"]
+    ordering = ["-created_at"]
+
+    def get_permissions(self):
+        if self.request.method in ["GET", "HEAD", "OPTIONS"]:
+            return [AllowAny()]
+        return [IsAdminUser()]
+
+    def get_queryset(self):
+        subcategory_id = self.request.query_params.get("subcategory")
+        user = self.request.user
+
+        if user.is_authenticated and user.is_staff:
+            if subcategory_id:
+                return Product.objects.filter(
+                    subcategory=subcategory_id
+                )
+
+            return Product.objects.all()
+
+        if subcategory_id:
+            return Product.objects.filter(
+                is_active=True,
+                subcategory=subcategory_id
+            )
+
+        return Product.objects.filter(
+            is_active=True
+        )
+
+
+class ProductVariantView(ModelViewSet):
+    serializer_class = ProductVariantSerializer
+
+    def get_permissions(self):
+        if self.request.method in ["GET", "HEAD", "OPTIONS"]:
+            return [AllowAny()]
+        return [IsAdminUser()]
+
+    def get_queryset(self):
+        if self.request.user.is_staff:
+            return ProductVariant.objects.all()
+
+        return ProductVariant.objects.filter(
+            is_active=True,
+            product__is_active=True
+        )
+
+
+class ProductImageView(ModelViewSet):
+    serializer_class = ProductImageSerializer
+    parser_classes = [MultiPartParser,FormParser]
+
+    def get_permissions(self):
+        if self.request.method in ["GET", "HEAD", "OPTIONS"]:
+            return [AllowAny()]
+        return [IsAdminUser()]
+
+    def get_queryset(self):
+        if self.request.user.is_authenticated and self.request.user.is_staff:
+            return ProductImage.objects.all()
+
+        return ProductImage.objects.filter(
+            product__is_active=True
+        )
+
+
+
 
 

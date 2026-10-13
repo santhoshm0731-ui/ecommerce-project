@@ -14,6 +14,7 @@ from pathlib import Path
 from  datetime import timedelta
 
 import rest_framework_simplejwt
+from django.conf.global_settings import MEDIA_ROOT
 from dotenv import load_dotenv
 
 BASE_DIR=Path(__file__).resolve().parent.parent
@@ -26,7 +27,7 @@ load_dotenv(dotenv_path=BASE_DIR.parent / '.env')
 # See https://docs.djangoproject.com/en/6.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-!zs#-ka50!*cn9m(yb^^qs^k4g0kzr6=d935r*&9a75_1g8h@w'
+SECRET_KEY = os.getenv('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -131,6 +132,8 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/6.1/howto/static-files/
 
 STATIC_URL = 'static/'
+MEDIA_URL = "/media/"
+MEDIA_ROOT = BASE_DIR / "media"
 
 
 # Email
