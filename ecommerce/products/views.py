@@ -175,9 +175,16 @@ class ProductVariantView(ModelViewSet):
         return [IsAdminUser()]
 
     def get_queryset(self):
-        if self.request.user.is_staff:
+        product_id=self.request.query_params.get("product")
+        if self.request.user.is_authenticated and self.request.user.is_staff:
+            if product_id:
+                return ProductVariant.objects.filter(product=product_id)
             return ProductVariant.objects.all()
-
+        if product_id:
+            return(
+                ProductVariant.objects.filter(product=product_id,
+                         product__is_active=True,is_active=True)
+               )
         return ProductVariant.objects.filter(
             is_active=True,
             product__is_active=True
