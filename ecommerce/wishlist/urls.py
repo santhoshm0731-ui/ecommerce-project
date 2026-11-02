@@ -10,6 +10,8 @@ router.register(
     basename="wishlist"
 )
 
+
+
 urlpatterns=[
     path('',include(router.urls))
 ]
