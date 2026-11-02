@@ -176,11 +176,6 @@ class ProductVariantSerializer(serializers.ModelSerializer):
 
         return value
 
-    def create(self, validated_data):
-        return ProductVariant.objects.create(**validated_data)
-
-    def update(self, instance, validated_data):
-        return super().update(instance, validated_data)
 
 
 class ProductImageSerializer(serializers.ModelSerializer):
@@ -274,11 +269,8 @@ class ProductSerializer(serializers.ModelSerializer):
             )
         return value
 
-    def create(self, validated_data):
-        return Product.objects.create(**validated_data)
 
-    def update(self, instance, validated_data):
-        return super().update(instance, validated_data)
+
 
 
 
