@@ -24,3 +24,4 @@ class WishlistView(ModelViewSet):
             })
 
         serializer.save(customer=self.request.user)
+
