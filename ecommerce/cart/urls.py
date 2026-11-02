@@ -7,7 +7,7 @@ from .views import CartView, CartItemView
 router = DefaultRouter()
 
 router.register(
-    "cart",
+    "",
     CartView,
     basename="user-cart"
 )
