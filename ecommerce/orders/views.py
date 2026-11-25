@@ -7,9 +7,9 @@ from rest_framework.status import HTTP_201_CREATED,HTTP_400_BAD_REQUEST,HTTP_200
 from payments.models import Payment
 from products.models import ProductVariant
 from .models import Order,OrderItem
-from .serializers import OrderSerializer,OrderItemSerializer,CheckoutSerializer,OrderCancelSerializer
+from .serializers import OrderSerializer,OrderItemSerializer,CheckoutSerializer,OrderCancelSerializer,AdminOrderSerializer
 from rest_framework.viewsets import ModelViewSet
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated,IsAdminUser
 from cart.models import Cart,CartItem
 from rest_framework.exceptions import ValidationError
 from rest_framework.views import APIView
@@ -185,14 +185,15 @@ class OrderCancelView(APIView):
             status=HTTP_200_OK
         )
 
+class AdminOrderView(ModelViewSet):
+    serializer_class = AdminOrderSerializer
+    permission_classes = [IsAdminUser]
+    http_method_names = ["get", "patch", "head", "options"]
 
-
-
-
-
-
-
-
-
-
+    def get_queryset(self):
+        return (
+            Order.objects.select_related("customer")
+            .prefetch_related("items", "items__product_variant")
+            .order_by("-created_at")
+        )
 

@@ -40,6 +40,6 @@ class Payment(models.Model):
         blank=True
     )
     amount=models.DecimalField(max_digits=12, decimal_places=2)
-    status=models.CharField(default="PENDING",choices=status,max_length=10)
+    status=models.CharField(default="PENDING",choices=status,max_length=20)
     created_at=models.DateTimeField(default=timezone.now)
 
