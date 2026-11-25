@@ -15,11 +15,12 @@ from  datetime import timedelta
 
 import rest_framework_simplejwt
 from django.conf.global_settings import MEDIA_ROOT
+from django.utils.timezone import override
 from dotenv import load_dotenv
 
 BASE_DIR=Path(__file__).resolve().parent.parent
 
-load_dotenv(dotenv_path=BASE_DIR.parent / '.env')
+load_dotenv(dotenv_path=BASE_DIR.parent / '.env',override=True)
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 
@@ -32,7 +33,7 @@ SECRET_KEY = os.getenv('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["*"]
 
 
 # Application definition
@@ -50,6 +51,8 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt.token_blacklist',
     'wishlist',
     'cart',
+    'orders',
+    'payments',
 ]
 
 MIDDLEWARE = [
@@ -161,3 +164,7 @@ REST_FRAMEWORK = {
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ],
 }
+
+RAZORPAY_KEY_ID=os.getenv('RAZORPAY_KEY_ID')
+RAZORPAY_KEY_SECRET=os.getenv('RAZORPAY_KEY_SECRET')
+RAZORPAY_WEBHOOK_SECRET=os.getenv('RAZORPAY_WEBHOOK_SECRET')
