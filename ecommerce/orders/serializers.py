@@ -97,3 +97,47 @@ class OrderCancelSerializer(serializers.Serializer):
         if not self.context['request'].user.orders.filter(id=value).exists():
             raise serializers.ValidationError('Invalid order id.')
         return value
+class OrderCancelSerializer(serializers.Serializer):
+    order_id=serializers.IntegerField(required=True)
+    def validate_order_id(self,value):
+        if not self.context['request'].user.orders.filter(id=value).exists():
+            raise serializers.ValidationError('Invalid order id.')
+        return value
+
+class AdminOrderSerializer(serializers.ModelSerializer):
+    status=serializers.ChoiceField(choices=Order.STATUS_CHOICES,required=True)
+    class Meta:
+        model = Order
+        fields = [
+            "id",
+            "customer",
+            "order_number",
+            "status",
+            "total_amount",
+            "shipping_address",
+            "created_at",
+            "payment_method"
+        ]
+        read_only_fields = [
+            "id",
+            "customer",
+            "order_number",
+            "total_amount",
+            "created_at",
+            "payment_method",
+            "shipping_address"
+        ]
+    def validate_status(self,value):
+        allowed_transitions = {
+            "PENDING": [],
+            "CONFIRMED": ["SHIPPED"],
+            "SHIPPED": ["DELIVERED"],
+            "DELIVERED": [],
+            "CANCELLED": [],
+        }
+        current_status = self.instance.status
+        if value not in allowed_transitions.get(current_status, []):
+            raise serializers.ValidationError(
+            f"Cannot change status from {current_status} to {value}."
+            )
+        return value

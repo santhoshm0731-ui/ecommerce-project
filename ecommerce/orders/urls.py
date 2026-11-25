@@ -1,6 +1,6 @@
 from rest_framework.routers import DefaultRouter
 from django.urls import path, include
-from .views import OrderView,OrderItemView,CheckoutView,OrderCancelView
+from .views import OrderView,OrderItemView,CheckoutView,OrderCancelView,AdminOrderView
 
 router=DefaultRouter()
 
@@ -8,6 +8,10 @@ router.register(
     "items",
     OrderItemView,
     "order-items"
+)
+router.register("admin",
+          AdminOrderView,
+          basename="status-change"
 )
 
 router.register(
