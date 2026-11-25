@@ -7,7 +7,9 @@ status=[
     ("PENDING","pending"),
     ("PROCESSING","processing"),
     ("SUCCESS","success"),
-    ("FAILED","failed")
+    ("FAILED","failed"),
+    ("REFUNDED", "refunded"),
+    ("REFUND_INITIATED","refund_initiated")
 ]
 
 class Payment(models.Model):
@@ -27,7 +29,7 @@ class Payment(models.Model):
         blank=False
     )
     razorpay_payment_id=models.CharField(
-        max_length=100,
+        max_length=300,
         unique=True,
         null=True,
         blank=True

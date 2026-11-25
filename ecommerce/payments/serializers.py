@@ -30,7 +30,7 @@ class CreatePaymentSerializer(serializers.Serializer):
 class VerifyPaymentSerializer(serializers.Serializer):
     razorpay_order_id=serializers.CharField(required=True,max_length=100)
     razorpay_payment_id=serializers.CharField(required=True,max_length=100)
-    razorpay_signature=serializers.CharField(required=True,max_length=100)
+    razorpay_signature=serializers.CharField(required=True,max_length=300)
 
 
 
