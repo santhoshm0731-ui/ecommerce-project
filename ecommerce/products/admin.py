@@ -14,15 +14,14 @@ class ProductImageInline(admin.TabularInline):
 
 @admin.register(Category)
 class CategoryAdmin(admin.ModelAdmin):
-    list_display = ("id", "name", "slug")
-    prepopulated_fields = {"slug": ("name",)}
+    list_display = ("id", "name")
     search_fields = ("name",)
 
 
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
-    list_display = ("id", "name", "category", "is_active", "created_at")
-    list_filter = ("is_active", "category")
+    list_display = ("id", "name", "is_active", "created_at")
+    list_filter = ("is_active",)
     search_fields = ("name",)
     inlines = [ProductVariantInline, ProductImageInline]
 

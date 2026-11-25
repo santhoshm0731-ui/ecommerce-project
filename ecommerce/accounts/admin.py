@@ -14,6 +14,7 @@ class UserAdmin(admin.ModelAdmin):
 
 @admin.register(Address)
 class AddressAdmin(admin.ModelAdmin):
-    list_display = ("id", "user", "city", "state", "zip_code", "country")
+    list_display = ("id", "customer", "city", "state", "zip_code", "country")
     list_filter = ("state", "country")
-    search_fields = ("user__email", "city", "zip_code")
+    search_fields = ("customer__email", "city", "zip_code")
+
