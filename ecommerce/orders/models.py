@@ -13,6 +13,12 @@ class Order(models.Model):
         ("DELIVERED", "Delivered"),
         ("CANCELLED", "Cancelled"),
     ]
+
+    types = [
+        ("ONLINE", "online"),
+        ("COD", "cod")
+    ]
+
     customer = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         related_name="orders",
@@ -33,6 +39,7 @@ class Order(models.Model):
     )
     shipping_address = models.TextField()
     created_at = models.DateTimeField(default=timezone.now)
+    payment_method=models.CharField(default='ONLINE',choices=types,max_length=15)
 
     def __str__(self):
         return self.order_number

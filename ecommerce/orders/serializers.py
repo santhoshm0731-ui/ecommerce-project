@@ -1,8 +1,5 @@
-
 from .models import Order, OrderItem
 from rest_framework import serializers
-from accounts.models import Address
-
 
 class OrderSerializer(serializers.ModelSerializer):
     class Meta:
@@ -15,6 +12,7 @@ class OrderSerializer(serializers.ModelSerializer):
             "total_amount",
             "shipping_address",
             "created_at",
+            "payment_method"
         ]
         read_only_fields = [
             "id",
@@ -23,6 +21,7 @@ class OrderSerializer(serializers.ModelSerializer):
             "status",
             "total_amount",
             "created_at",
+            "payment_method"
         ]
 
 
@@ -86,8 +85,15 @@ class OrderItemSerializer(serializers.ModelSerializer):
 
 class CheckoutSerializer(serializers.Serializer):
     address_id=serializers.IntegerField(required=True)
+    payment_method=serializers.ChoiceField(choices=Order.types, required=True)
     def validate_address_id(self,value):
         if not self.context['request'].user.addresses.filter(id=value).exists():
             raise serializers.ValidationError("Invalid address")
         return value
 
+class OrderCancelSerializer(serializers.Serializer):
+    order_id=serializers.IntegerField(required=True)
+    def validate_order_id(self,value):
+        if not self.context['request'].user.orders.filter(id=value).exists():
+            raise serializers.ValidationError('Invalid order id.')
+        return value

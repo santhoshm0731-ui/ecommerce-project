@@ -1,6 +1,6 @@
 from rest_framework.routers import DefaultRouter
 from django.urls import path, include
-from .views import OrderView,OrderItemView,CheckoutView
+from .views import OrderView,OrderItemView,CheckoutView,OrderCancelView
 
 router=DefaultRouter()
 
@@ -19,5 +19,6 @@ router.register(
 
 urlpatterns=[
     path('checkout/',CheckoutView.as_view(),name='cart-checkout'),
+    path('cancel/',OrderCancelView.as_view(),name='order-cancel'),
     path("",include(router.urls))
 ]
