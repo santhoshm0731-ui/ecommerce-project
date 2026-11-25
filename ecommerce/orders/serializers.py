@@ -97,12 +97,6 @@ class OrderCancelSerializer(serializers.Serializer):
         if not self.context['request'].user.orders.filter(id=value).exists():
             raise serializers.ValidationError('Invalid order id.')
         return value
-class OrderCancelSerializer(serializers.Serializer):
-    order_id=serializers.IntegerField(required=True)
-    def validate_order_id(self,value):
-        if not self.context['request'].user.orders.filter(id=value).exists():
-            raise serializers.ValidationError('Invalid order id.')
-        return value
 
 class AdminOrderSerializer(serializers.ModelSerializer):
     status=serializers.ChoiceField(choices=Order.STATUS_CHOICES,required=True)
