@@ -24,7 +24,9 @@ urlpatterns = [
     path('api/auth/',include('accounts.urls')),
     path('api/products/',include('products.urls')),
     path('api/wishlist/',include('wishlist.urls')),
-    path('api/cart/',include('cart.urls'))
+    path('api/cart/',include('cart.urls')),
+    path('api/auth/orders/',include('orders.urls')),
+    path('api/auth/payments/',include('payments.urls'))
 ]
 
 urlpatterns+=static(
